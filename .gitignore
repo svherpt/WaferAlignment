@@ -1,41 +1,45 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
+# -----------------------------
+# Visual Studio / C++ project
+# -----------------------------
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
 *.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
+*.ipdb
+*.idb
+*.pch
+*.pdb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.cache
+*.log
+*.tlog
+*.lastbuildstate
+*.ilk
 *.exe
-*.out
-*.app
+*.dll
+*.lib
+*.exp
+*.vcxproj.user
+*.VC.db
+*.VC.opendb
 
-# debug information files
-*.dwo
+# Visual Studio folders
+simulator/.vs/
+simulator/x64/
+simulator/x86/
+simulator/Debug/
+simulator/Release/
+simulator/GeneratedFiles/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build/
+out/
+
+simulator/**/x64/
+simulator/**/Debug/
+simulator/**/Release/
