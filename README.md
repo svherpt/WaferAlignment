@@ -10,8 +10,7 @@ This project exposes the C++ Wafer Alignment Simulator as a Python module using 
 - Conda: [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
 - C++ compiler supporting C++20
   - Windows: Visual Studio 2022
-  - Linux: g++ 11+ or clang++ 14+
-  - macOS: clang++ 14+
+- Linux or macOS have not been tested
 - CMake >= 3.18
 
 Install Python dependencies:
@@ -39,16 +38,11 @@ mkdir build
 cd build
 ```
 
-2. Configure with CMake:
+2. Build with CMake:
 
 ```bash
-cmake ..
-```
-
-3. Build the project:
-
-```bash
-cmake --build . -j
+cmake -S . -B build 
+cmake --build build
 ```
 
 - This builds the core simulator library (`simulator_lib`) and the Python module (`wafer_simulator`).

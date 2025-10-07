@@ -1,5 +1,8 @@
-from wafer_simulator import simulator
+import wafer_simulator
 
-w = simulator.WaferSimulator(deltaT=0.1, speed=0.5, limit=1.0)
-w.update()
-print(w.get_position())
+sim = wafer_simulator.WaferSimulator(0.1, 1.0)
+sim.setSpeed(1.0)
+
+for i in range(30):
+    sim.update()
+    print(sim.getPosition())
