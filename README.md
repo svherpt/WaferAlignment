@@ -41,9 +41,14 @@ cd build
 2. Build with CMake:
 
 ```bash
-cmake -S . -B build 
-cmake --build build
+cmake -S simulator -B build -G "Visual Studio 17 2022" -A x64
+cmake --build build --config Debug
 ```
+
+```bash
+cmake --build build --config Release
+```
+
 
 - This builds the core simulator library (`simulator_lib`) and the Python module (`wafer_simulator`).
 - The resulting Python extension is automatically copied to the `python/` folder.

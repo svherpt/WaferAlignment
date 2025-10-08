@@ -9,6 +9,8 @@
 *.userosscache
 *.sln.docstates
 simulator/simulator/x64/
+simulator/simulator_app/x64/
+simulator/simulator_tests/x64/
 simulator/x64/
 
 # Build folders
