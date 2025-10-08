@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(WaferAlignment)
+project(WaferAlignment LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,13 +9,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # --- Python ---
 find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
 
-# --- Nanobind ---
-execute_process(
-    COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
-    OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NANOBIND_DIR
+# --- Fetch nanobind ---
+include(FetchContent)
+FetchContent_Declare(
+  nanobind
+  GIT_REPOSITORY https://github.com/wjakob/nanobind.git
+  GIT_TAG v2.9.2
 )
-set(nanobind_DIR ${NANOBIND_DIR})
-find_package(nanobind CONFIG REQUIRED)
+FetchContent_MakeAvailable(nanobind)
 
 # --- Core simulator library ---
 file(GLOB SIMULATOR_SRC "simulator/*.cpp")
@@ -41,24 +42,11 @@ if(NOT EXISTS ${INIT_PY})
     file(WRITE ${INIT_PY} "")
 endif()
 
-# --- Optional tests ---
-option(BUILD_TESTS "Build simulator tests" ON)
-
-if(BUILD_TESTS)
-    include(FetchContent)
-
-    # Fetch GoogleTest if not installed
-    FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.14.0
-    )
-    FetchContent_MakeAvailable(googletest)
-
-    enable_testing()
-    file(GLOB TEST_SRC "simulator_tests/*.cpp")
-    add_executable(simulator_tests ${TEST_SRC})
-    target_link_libraries(simulator_tests PRIVATE simulator_lib gtest_main)
-    include(GoogleTest)
-    gtest_discover_tests(simulator_tests)
-endif()
+# --- Tests ---
+find_package(GTest REQUIRED)
+enable_testing()
+file(GLOB TEST_SRC "simulator_tests/*.cpp")
+add_executable(simulator_tests ${TEST_SRC})
+target_link_libraries(simulator_tests PRIVATE simulator_lib GTest::gtest_main)
+include(GoogleTest)
+gtest_discover_tests(simulator_tests)
