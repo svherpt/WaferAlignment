@@ -19,26 +19,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install CMake
-      - name: Setup CMake
-        uses: lukka/get-cmake@v5
-
-      # Setup Visual Studio 2022
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1
-
-      # Setup Python
+      # Install Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
 
-      # Install vcpkg dependencies
-      - name: Install vcpkg and dependencies
-        uses: lukka/get-vcpkg@v25
+      # Install CMake
+      - name: Setup CMake
+        uses: actions/setup-cmake@v3
         with:
-          vcpkg-root: ${{ github.workspace }}/vcpkg
-          vcpkg-args: gtest nanobind:x64-windows
+          cmake-version: '3.31.0'
+
+      # Install vcpkg
+      - name: Setup vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git ${{ github.workspace }}/vcpkg
+          ${{ github.workspace }}/vcpkg/bootstrap-vcpkg.bat
+
+      # Install dependencies via vcpkg
+      - name: Install vcpkg dependencies
+        run: |
+          ${{ github.workspace }}/vcpkg/vcpkg install gtest nanobind:x64-windows
 
       # Configure CMake
       - name: Configure CMake
