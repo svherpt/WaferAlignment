@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_test:
+    runs-on: windows-latest
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python (needed for bindings)
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      # Step 3: Install Ninja (optional, if you want Ninja generator)
+      - name: Install Ninja
+        run: choco install ninja -y
+
+      # Step 4: Configure CMake
+      - name: Configure CMake
+        run: cmake -S simulator -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+
+      # Step 5: Build everything (library, tests, bindings)
+      - name: Build
+        run: cmake --build build --config Release
+
+      # Step 6: Run C++ tests
+      - name: Run C++ tests
+        run: ctest --test-dir build --output-on-failure --C Release
