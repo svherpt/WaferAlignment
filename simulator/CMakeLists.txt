@@ -16,7 +16,6 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/wjakob/nanobind.git
   GIT_TAG v2.9.2
 )
-
 FetchContent_MakeAvailable(nanobind)
 
 # --- Core simulator library ---
@@ -43,16 +42,8 @@ if(NOT EXISTS ${INIT_PY})
     file(WRITE ${INIT_PY} "")
 endif()
 
-# --- Fetch GTest ---
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/refs/tags/release-1.14.0.zip
-)
-# For Windows: prevent overriding default compiler flags
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-
 # --- Tests ---
+find_package(GTest REQUIRED)
 enable_testing()
 file(GLOB TEST_SRC "simulator_tests/*.cpp")
 add_executable(simulator_tests ${TEST_SRC})
