@@ -51,6 +51,7 @@ Building the Python Module
 1. From the project root, run:
 
 ```bash
+conda activate wafer
 cmake -S simulator -B build -G "Visual Studio 17 2022" -A x64
 ```
 
