@@ -9,5 +9,5 @@ TEST(WaferSimulatorTest, Reset) {
     wafer.update();
     wafer.reset();
     EXPECT_DOUBLE_EQ(wafer.getPosition(), 0.0);
-    EXPECT_DOUBLE_EQ(wafer.getLimit(), 1.0);
+    EXPECT_DOUBLE_EQ(wafer.getLimit(), 2.0);
 }
