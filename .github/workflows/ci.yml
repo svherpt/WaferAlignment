@@ -1,12 +1,11 @@
-# .github/workflows/ci.yml
-
+name: CI
 on:
   pull_request:
     branches: [main]
 
 jobs:
   build:
-    name: CI / build       # EXACT check name for branch protection
+    name: build
     runs-on: ubuntu-latest
 
     steps:
