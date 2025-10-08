@@ -1,19 +1,22 @@
-# Wafer Alignment Simulator - Python Bindings
+Wafer Alignment Simulator - Python Bindings
+===========================================
 
-This project exposes the C++ Wafer Alignment Simulator as a Python module using **nanobind**. It allows controlling the simulator from Python for ML/RL experiments or other analysis workflows.
+This project exposes the C++ Wafer Alignment Simulator as a Python module using **nanobind**. 
+It allows controlling the simulator from Python for ML/RL experiments or other analysis workflows.
 
 ---
 
-## Requirements
+Requirements
+------------
 
 - Python 3.12 (Conda environment `wafer`)
-- Conda: [https://docs.conda.io/en/latest/miniconda.html](https://docs.conda.io/en/latest/miniconda.html)
+- Conda: https://docs.conda.io/en/latest/miniconda.html
 - C++ compiler supporting C++20
   - Windows: Visual Studio 2022
 - Linux or macOS have not been tested
 - CMake >= 3.18
 
-Install Python dependencies:
+Install Python dependencies using a conda environment
 
 ```bash
 conda activate wafer
@@ -22,46 +25,59 @@ pip install -r requirements.txt
 
 Or using the Conda environment file:
 
-```bash
-conda env create -f environment.yml
-conda activate wafer
+---
+
+Project Structure
+-----------------
+
+```
+WaferAlignment/
+├─ simulator/                 # Core C++ library
+│  ├─ simulator/              # Core source files (.h/.cpp)
+│  ├─ simulator_tests/        # Unit tests for the simulator library using Google Test
+│  ├─ bindings/               # Python bindings using nanobind
+│  └─ simulator_app/          # Optional Visual Studio solution to run the core simulator
+├─ python/                    # Python package, receives the .pyd module
+├─ build/                     # Build artifacts (CMake output)
+├─ requirements.txt
+└─ environment.yml
 ```
 
 ---
 
-## Building the Python module
+Building the Python Module
+--------------------------
 
-1. Create a build directory:
-
-```bash
-mkdir build
-cd build
-```
-
-2. Build with CMake:
+1. From the project root, run:
 
 ```bash
 cmake -S simulator -B build -G "Visual Studio 17 2022" -A x64
+```
+
+2. Build the library and module (Debug for development):
+
+```bash
 cmake --build build --config Debug
 ```
+
+3. Build for performance (Release):
 
 ```bash
 cmake --build build --config Release
 ```
 
-
-- This builds the core simulator library (`simulator_lib`) and the Python module (`wafer_simulator`).
-- The resulting Python extension is automatically copied to the `python/` folder.
+- This builds the core simulator library (`simulator_lib`), the Python module (`wafer_simulator`), 
+  and copies the `.pyd` to the `python/` folder.
 
 ---
 
-## Using the Python module
+Running the Python Module
+-------------------------
 
-1. Ensure you are in the project root so that `python/` is on the Python path:
+1. Activate the environment:
 
 ```bash
 conda activate wafer
-python
 ```
 
 2. Import the module:
@@ -74,23 +90,31 @@ result = ws.some_function()
 print(result)
 ```
 
-- The `python/` folder is a package because `__init__.py` is automatically created by CMake.
+- The `python/` folder is a Python package because `__init__.py` is automatically created by CMake.
 
 ---
 
-## Notes
+Running Unit Tests
+------------------
 
-- Changes to the core C++ simulator files (`simulator/simulator/`) require rebuilding the Python module.
-- Nanobind is used for efficient C++ ↔ Python bindings.
-- On Windows, the Python module has extension `.pyd`; on Linux/macOS, it is `.so`.
-- For local development, you can optionally install the Python package in editable mode:
+- In Visual Studio, open `simulator_app/Simulator.sln`.
+- Build the `simulator_tests` project.
+- Run tests from Test Explorer.
+- Alternatively, from command line (inside `build`):
 
 ```bash
-pip install -e python/
+ctest --config Debug
 ```
 
-This allows importing and testing changes without rebuilding every time.
+- Changes to core C++ files require rebuilding the library for tests and Python module.
 
 ---
 
-Maintainer: Simen van Herpt
+Notes
+-----
+
+- Nanobind is used for efficient C++ ↔ Python bindings.
+- Python module on Windows has extension `.pyd`; on Linux/macOS it is `.so`.
+
+---
+
