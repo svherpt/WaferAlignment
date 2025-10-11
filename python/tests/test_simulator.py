@@ -11,6 +11,8 @@ def test_wafer_simulator_basic():
 
     # Set speed and update
     sim.setSpeed(50.0)
+    assert sim.getSpeed() == 50.0
+
     sim.update()
     # position = 0.0 + 0.1 * 50.0 = 5.0
     assert sim.getPosition() == 5.0

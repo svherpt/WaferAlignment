@@ -24,6 +24,11 @@ double WaferSimulator::getPosition() const {
     return position;
 }
 
+
+double WaferSimulator::getSpeed() const {
+    return currSpeed;
+}
+
 double WaferSimulator::getLimit() const {
     return limit;
 }

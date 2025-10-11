@@ -14,6 +14,7 @@ public:
     void setSpeed(double newSpeed);
     void reset();
     double getPosition() const;
+    double getSpeed() const;
     double getLimit() const;
 };
 
