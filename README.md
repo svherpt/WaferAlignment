@@ -52,7 +52,7 @@ Building the Python Module
 
 ```bash
 conda activate wafer
-cmake -S simulator -B build -G "Visual Studio 17 2022" -A x64
+cmake -S simulator -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=OFF
 ```
 
 2. Build the library and module (Debug for development):
