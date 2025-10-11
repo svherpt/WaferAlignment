@@ -14,5 +14,6 @@ NB_MODULE(wafer_simulator, m) {
         .def("setSpeed", &WaferSimulator::setSpeed, "Set a new speed", nb::arg("newSpeed"))
         .def("reset", &WaferSimulator::reset, "Reset the wafer to initial position and speed")
         .def("getPosition", &WaferSimulator::getPosition, "Get the current wafer position")
+        .def("getSpeed", &WaferSimulator::getSpeed, "Get the current wafer speed")
         .def("getLimit", &WaferSimulator::getLimit, "Get the maximum allowed position");
 }
