@@ -50,4 +50,4 @@ jobs:
       # 8. Run Python tests (from python/ folder)
       - name: Run Python tests
         working-directory: python
-        run: pytest -v tests
+        run: python -m pytest -v tests
