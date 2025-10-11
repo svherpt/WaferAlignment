@@ -111,6 +111,14 @@ ctest --config Debug
 
 ---
 
+- Go to the python/ subdirectory
+- Run the tests using:
+
+```bash
+python -m pytest -v tests
+```
+
+
 Notes
 -----
 
