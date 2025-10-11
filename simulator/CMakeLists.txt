@@ -32,8 +32,9 @@ target_link_libraries(wafer_simulator PRIVATE simulator_lib)
 add_custom_command(TARGET wafer_simulator POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
             $<TARGET_FILE:wafer_simulator>
-            ${CMAKE_CURRENT_SOURCE_DIR}/../python/
+            ${CMAKE_CURRENT_SOURCE_DIR}/../python/src/simulator/
 )
+
 
 # Ensure __init__.py exists
 set(INIT_PY "${CMAKE_CURRENT_SOURCE_DIR}/../python/__init__.py")

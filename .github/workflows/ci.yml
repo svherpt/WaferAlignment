@@ -47,6 +47,7 @@ jobs:
       - name: Run C++ tests
         run: ctest --output-on-failure --test-dir build
 
-      # 8. Run Python tests (after C++ build)
+      # 8. Run Python tests (from python/ folder)
       - name: Run Python tests
-        run: pytest -v python/tests
+        working-directory: python
+        run: pytest -v tests
