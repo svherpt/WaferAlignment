@@ -20,7 +20,12 @@ find_package(nanobind CONFIG REQUIRED)
 # --- Core simulator library ---
 file(GLOB SIMULATOR_SRC "simulator/*.cpp")
 add_library(simulator_lib ${SIMULATOR_SRC})
-target_include_directories(simulator_lib PUBLIC simulator)
+
+# Include simulator headers + external for Eigen
+target_include_directories(simulator_lib PUBLIC
+    simulator
+    ${CMAKE_CURRENT_SOURCE_DIR}/simulator/external
+)
 
 # --- Python bindings ---
 nanobind_add_module(wafer_simulator
@@ -28,13 +33,17 @@ nanobind_add_module(wafer_simulator
 )
 target_link_libraries(wafer_simulator PRIVATE simulator_lib)
 
+# Also include Eigen for Python module compilation
+target_include_directories(wafer_simulator PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/simulator/external
+)
+
 # Copy to python package
 add_custom_command(TARGET wafer_simulator POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
             $<TARGET_FILE:wafer_simulator>
             ${CMAKE_CURRENT_SOURCE_DIR}/../python/src/simulator/
 )
-
 
 # Ensure __init__.py exists
 set(INIT_PY "${CMAKE_CURRENT_SOURCE_DIR}/../python/__init__.py")
@@ -49,9 +58,9 @@ if(BUILD_TESTS)
     include(FetchContent)
 
     FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.14.0  # <--- note the 'v' instead of 'release-'
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.14.0
     )
     FetchContent_MakeAvailable(googletest)
 

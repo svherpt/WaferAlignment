@@ -5,13 +5,15 @@
 #include "WaferSimulator.h"
 
 int main() {
-    WaferSimulator wafer(0.1f, 1.0); // deltaT=0.1, speed=0.5, limit=1.0
+    WaferSimulator sim(0.01, 10.0, 10.0);
 
+    sim.setForce(Eigen::Vector2d(1.0, 0.5));
 
-    wafer.setSpeed(1.0);
-    for (int i = 0; i < 30; ++i) {
-        wafer.update();
-        std::cout << "Step " << i << ": position = " << wafer.getPosition() << '\n';
+    for (int i = 0; i < 100; ++i) {
+        sim.update();
+        std::cout << "t=" << i * 0.01
+            << " pos=" << sim.getPosition().transpose()
+            << " vel=" << sim.getVelocity().transpose() << "\n";
     }
 
     return 0;
