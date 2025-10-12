@@ -7,9 +7,9 @@ NB_MODULE(wafer_simulator, m) {
     m.doc() = "WaferSimulator module exposed to Python using nanobind";
 
     nb::class_<WaferSimulator>(m, "WaferSimulator")
-        .def(nb::init<double, double, double>(), 
-             "Constructor with deltaT and X/Y limits",
-             nb::arg("deltaT"), nb::arg("limitX"), nb::arg("limitY"))
+    .def(nb::init<double, double, double, double, double>(),
+         "Constructor with deltaT, X/Y limits, mass, dragCoeff",
+         nb::arg("deltaT"), nb::arg("limitX"), nb::arg("limitY"), nb::arg("mass") = 1.0, nb::arg("dragCoeff") = 0.0)
         .def("update", &WaferSimulator::update, "Update the wafer position based on current forces")
         .def("setForce", [](WaferSimulator &sim, double fx, double fy) {
                 sim.setForce({fx, fy});
