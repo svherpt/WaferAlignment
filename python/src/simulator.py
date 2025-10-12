@@ -1,13 +1,3 @@
-<<<<<<< Updated upstream
-import wafer_simulator
-
-sim = wafer_simulator.WaferSimulator(0.1, 1.0)
-sim.setSpeed(1.0)
-
-for i in range(30):
-    sim.update()
-    print(sim.getPosition())
-=======
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from simulator import wafer_simulator
@@ -52,4 +42,3 @@ def update(frame):
 
 ani = animation.FuncAnimation(fig, update, frames=500, interval=20, blit=True)
 plt.show()
->>>>>>> Stashed changes
