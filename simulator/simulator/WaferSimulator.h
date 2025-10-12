@@ -24,7 +24,7 @@ private:
     Eigen::Vector2d position;   // current position
     Eigen::Vector2d velocity;   // current velocity
     Eigen::Vector2d force;      // current applied force
-    Eigen::Vector2d limits;     // ±x, ±y bounds
+    Eigen::Vector2d limits;     // ï¿½x, ï¿½y bounds
 
     double deltaT;              // time step
     double mass;                // wafer mass
