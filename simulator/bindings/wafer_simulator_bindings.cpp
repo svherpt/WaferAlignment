@@ -40,6 +40,7 @@ NB_MODULE(wafer_simulator, m) {
             return nb::make_tuple(v.x(), v.y());
         })
         .def("getOrientation", &WaferSimulator::getOrientation)
+        .def("getSize", &WaferSimulator::getSize)
         .def("getAngularVelocity", &WaferSimulator::getAngularVelocity)
         .def("getLimits", [](const WaferSimulator &sim) {
             auto l = sim.getLimits();

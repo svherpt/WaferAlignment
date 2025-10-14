@@ -78,6 +78,7 @@ Eigen::Vector2d WaferSimulator::getPosition() const { return position; }
 Eigen::Vector2d WaferSimulator::getVelocity() const { return velocity; }
 double WaferSimulator::getOrientation() const { return orientation; }
 double WaferSimulator::getAngularVelocity() const { return angularVelocity; }
+double WaferSimulator::getSize() const { return size; }
 Eigen::Vector2d WaferSimulator::getLimits() const { return limits; }
 
 double WaferSimulator::wrapAngle(double angle) {

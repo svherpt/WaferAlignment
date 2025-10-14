@@ -27,6 +27,8 @@ public:
     double getOrientation() const;
     double getAngularVelocity() const;
     Eigen::Vector2d getLimits() const;
+    double getSize() const;
+
 
 private:
     Eigen::Vector2d position;
