@@ -1,21 +1,44 @@
-
-import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 from simulator import wafer_simulator
 
-sim = wafer_simulator.WaferSimulator(0.001, 100.0, 100.0)
-# Check initial position
-print("Position:", sim.getPosition())
+# Create simulator
+sim = wafer_simulator.WaferSimulator(0.05, 10.0, 10.0)
 
-# Set a force and update
-sim.setForce(1.0, 2.0)
-sim.update()
+# Lists to store trail
+xdata, ydata = [], []
 
-# Print the type of the position
-print(np.array(sim.getPosition()))
+limitX, limitY = sim.getLimits()
 
-# Check new position and velocity
-print("Position after update:", sim.getPosition())
-print("Velocity after update:", sim.getVelocity())
+print(sim.getLimits())
 
-# Check limits
-print("Limits:", sim.getLimits())
+# Set up figure
+fig, ax = plt.subplots()
+ax.set_xlim(-limitX, limitX)
+ax.set_ylim(-limitY, limitY)
+ax.set_xlabel("X position")
+ax.set_ylabel("Y position")
+ax.set_title("Wafer Simulator with Trail")
+
+# Point and trail line
+point, = ax.plot([], [], 'ro')       # red moving point
+trail, = ax.plot([], [], 'b-', lw=1) # blue trail line
+
+sim.setForce(1,0)
+
+def update(frame):
+    sim.update()
+    x, y = sim.getPosition()
+    print(x,y)
+    # Update point
+    point.set_data([x], [y])
+    
+    # Update trail
+    xdata.append(x)
+    ydata.append(y)
+    trail.set_data(xdata, ydata)
+    
+    return trail, point
+
+ani = animation.FuncAnimation(fig, update, frames=500, interval=20, blit=True)
+plt.show()
