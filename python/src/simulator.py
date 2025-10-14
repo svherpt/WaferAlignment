@@ -1,19 +1,17 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Polygon
 from simulator import wafer_simulator
 import numpy as np
 
 # ---------- Simulation Setup ----------
 sim = wafer_simulator.WaferSimulator(0.05, 10.0, 10.0, 1.0)
-
-# Apply a constant centre-of-mass force
 sim.applyForce(1.0, 0.5)
-
-# Trajectory storage
 trajectory = []
 
 limitX, limitY = sim.getLimits()
+size = sim.getSize()
+half_size = size / 2
 
 # ---------- Figure Setup ----------
 fig, ax = plt.subplots()
@@ -22,30 +20,44 @@ ax.set_ylim(-limitY, limitY)
 ax.set_xlabel("X position")
 ax.set_ylabel("Y position")
 ax.set_title("Wafer Simulator with Rotating Square")
+ax.set_aspect('equal', adjustable='box')  # square aspect ratio
 
-# Plot elements
-trail_line, = ax.plot([], [], 'b-', lw=1)
-wafer_patch = Rectangle((0, 0), sim.getSize(), sim.getSize(), fc='r', ec='k', alpha=0.6)
+
+# Polygon for wafer
+corners = np.array([[-half_size, -half_size],
+                    [ half_size, -half_size],
+                    [ half_size,  half_size],
+                    [-half_size,  half_size]])
+wafer_patch = Polygon(corners, fc='r', ec='k', alpha=0.6)
 ax.add_patch(wafer_patch)
+
+# Trail line
+trail_line, = ax.plot([], [], 'b-', lw=1)
 
 # ---------- Helper Functions ----------
 def update_trail():
-    xs, ys = zip(*trajectory)
-    trail_line.set_data(xs, ys)
+    if trajectory:
+        xs, ys = zip(*trajectory)
+        trail_line.set_data(xs, ys)
 
 def update_wafer_patch():
     x, y = sim.getPosition()
     theta = sim.getOrientation()
     
-    # Rectangle patch expects bottom-left corner; compute from center
-    half_size = sim.getSize() / 2
-    wafer_patch.set_xy((x - half_size, y - half_size))
+    # Rotation matrix
+    R = np.array([[np.cos(theta), -np.sin(theta)],
+                  [np.sin(theta),  np.cos(theta)]])
     
-    # Rotate about center
-    wafer_patch.angle = np.degrees(theta)
+    # Rotate and translate corners
+    rotated = (R @ corners.T).T + np.array([x, y])
+    wafer_patch.set_xy(rotated)
 
 # ---------- Animation Step ----------
 def animate(frame):
+    # Apply a constant torque every frame
+    
+    
+    # Step the simulation
     sim.update()
     
     # Store trajectory
@@ -57,6 +69,12 @@ def animate(frame):
     
     return trail_line, wafer_patch
 
+
 # ---------- Run Animation ----------
+
+sim.applyForce(1.0, 0.0)  # along world X
+sim.applyTorque(5)  # positive value → clockwise rotation
+
+
 ani = animation.FuncAnimation(fig, animate, frames=500, interval=20, blit=True)
 plt.show()
