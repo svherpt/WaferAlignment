@@ -1,32 +1,48 @@
 #pragma once
 #include <Eigen/Dense>
+#include <cmath>
+
+constexpr double PI = 3.14159265358979323846;
+
+
+enum class ForceMode2D {
+    Local,
+    World
+};
 
 class WaferSimulator {
 public:
-    WaferSimulator(double deltaT, double limitX, double limitY, double mass = 1.0, double dragCoeff = 0.05);
+    WaferSimulator(double deltaT, double limitX, double limitY, double size,
+        double mass = 1.0, double dragCoeff = 0.05, double rotDragCoeff = 0.02);
 
-    // physics update
     void update();
-
-    // apply a force (will overwrite existing force for this step)
-    void setForce(const Eigen::Vector2d& newForce);
-
-    // resets position, velocity, and force
     void reset();
 
-    // getters
+    void applyForce(const Eigen::Vector2d& force);
+    void applyForceAtPoint(const Eigen::Vector2d& force, const Eigen::Vector2d& point, ForceMode2D mode = ForceMode2D::Local);
+    void applyTorque(double torque);
+
     Eigen::Vector2d getPosition() const;
     Eigen::Vector2d getVelocity() const;
-    Eigen::Vector2d getForce() const;
+    double getOrientation() const;
+    double getAngularVelocity() const;
     Eigen::Vector2d getLimits() const;
 
 private:
-    Eigen::Vector2d position;   // current position
-    Eigen::Vector2d velocity;   // current velocity
-    Eigen::Vector2d force;      // current applied force
-    Eigen::Vector2d limits;     // �x, �y bounds
+    Eigen::Vector2d position;
+    Eigen::Vector2d velocity;
+    double orientation;
+    double angularVelocity;
+    Eigen::Vector2d accumulatedForce;
+    double accumulatedTorque;
 
-    double deltaT;              // time step
-    double mass;                // wafer mass
-    double dragCoeff;           // air friction coefficient
+    Eigen::Vector2d limits;
+    double deltaT;
+    double mass;
+    double size;
+    double inertia;
+    double dragCoeff;
+    double rotDragCoeff;
+
+    double wrapAngle(double angle);
 };
