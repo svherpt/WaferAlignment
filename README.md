@@ -1,3 +1,5 @@
+[![CI](https://github.com/svherpt/WaferAlignment/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/svherpt/WaferAlignment/actions/workflows/ci.yml)
+
 Wafer Alignment Simulator - Python Bindings
 ===========================================
 
