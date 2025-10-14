@@ -25,7 +25,7 @@ def animate(frame):
     sim.update()
     data_storage.update_trajectory(sim, key="wafer1")
     visualiser.update_visuals(sim, key="wafer1")
-    
+
     # Instead of returning old handles, return the objects from the visualiser dict
     return visualiser.trail_dict["wafer1"], visualiser.patch_dict["wafer1"]
 
