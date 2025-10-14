@@ -1,44 +1,34 @@
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+from matplotlib.animation import FuncAnimation
 from simulator import wafer_simulator
+from simulator import visualiser
+from simulator import data_storage
 
-# Create simulator
-sim = wafer_simulator.WaferSimulator(0.05, 10.0, 10.0)
+# ---------- Setup simulator ----------
+sim = wafer_simulator.WaferSimulator(0.05, 10.0, 10.0, 1.0)
 
-# Lists to store trail
-xdata, ydata = [], []
+# Apply some initial forces if desired
+sim.applyForce(1.0, 0.5)
 
-limitX, limitY = sim.getLimits()
+# Initialize trajectory tracking
+data_storage.init_trajectory(sim, key="wafer1")
 
-print(sim.getLimits())
-
-# Set up figure
+# ---------- Setup figure ----------
 fig, ax = plt.subplots()
-ax.set_xlim(-limitX, limitX)
-ax.set_ylim(-limitY, limitY)
-ax.set_xlabel("X position")
-ax.set_ylabel("Y position")
-ax.set_title("Wafer Simulator with Trail")
+wafer_patch, trail_line = visualiser.init_visuals(sim, ax, key="wafer1")
 
-# Point and trail line
-point, = ax.plot([], [], 'ro')       # red moving point
-trail, = ax.plot([], [], 'b-', lw=1) # blue trail line
-
-sim.setForce(1,0)
-
-def update(frame):
+# ---------- Animation / update loop ----------
+def animate(frame):
+    sim.applyTorque(0.5)
+    sim.applyForce(1.0, 0.0)
+    
     sim.update()
-    x, y = sim.getPosition()
-    print(x,y)
-    # Update point
-    point.set_data([x], [y])
-    
-    # Update trail
-    xdata.append(x)
-    ydata.append(y)
-    trail.set_data(xdata, ydata)
-    
-    return trail, point
+    data_storage.update_trajectory(sim, key="wafer1")
+    visualiser.update_visuals(sim, key="wafer1")
 
-ani = animation.FuncAnimation(fig, update, frames=500, interval=20, blit=True)
+    # Instead of returning old handles, return the objects from the visualiser dict
+    return visualiser.trail_dict["wafer1"], visualiser.patch_dict["wafer1"]
+
+
+ani = FuncAnimation(fig, animate, frames=500, interval=20, blit=False)
 plt.show()

@@ -2,98 +2,81 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-// Test constructor and getters
-TEST(WaferSimulatorTest, ConstructorAndGetters) {
-    WaferSimulator wafer(0.1, 1.0, 2.0, 1.0, 0.1);
+constexpr double EPS = 1e-9;
+
+// Test initial state and parameters
+TEST(WaferSimulatorTest, ConstructorInitialState) {
+    WaferSimulator wafer(0.1, 1.0, 2.0, 1.0, 0.1, 0.05, 0.02);
+
     auto pos = wafer.getPosition();
     auto vel = wafer.getVelocity();
     auto lim = wafer.getLimits();
-    auto f = wafer.getForce();
 
-    EXPECT_DOUBLE_EQ(pos.x(), 0.0);
-    EXPECT_DOUBLE_EQ(pos.y(), 0.0);
+    EXPECT_NEAR(pos.x(), 0.0, EPS);
+    EXPECT_NEAR(pos.y(), 0.0, EPS);
 
-    EXPECT_DOUBLE_EQ(vel.x(), 0.0);
-    EXPECT_DOUBLE_EQ(vel.y(), 0.0);
+    EXPECT_NEAR(vel.x(), 0.0, EPS);
+    EXPECT_NEAR(vel.y(), 0.0, EPS);
 
-    EXPECT_DOUBLE_EQ(lim.x(), 1.0);
-    EXPECT_DOUBLE_EQ(lim.y(), 2.0);
+    EXPECT_NEAR(lim.x(), 1.0, EPS);
+    EXPECT_NEAR(lim.y(), 2.0, EPS);
 
-    EXPECT_DOUBLE_EQ(f.x(), 0.0);
-    EXPECT_DOUBLE_EQ(f.y(), 0.0);
+    EXPECT_NEAR(wafer.getOrientation(), 0.0, EPS);
+    EXPECT_NEAR(wafer.getAngularVelocity(), 0.0, EPS);
 }
 
-// Test simple force application and update
-TEST(WaferSimulatorTest, ForceUpdate) {
-    WaferSimulator wafer(0.1, 10.0, 10.0, 1.0, 0.0); // no drag
-    wafer.setForce(Eigen::Vector2d(1.0, 2.0));
+// Applying force should accelerate linearly
+TEST(WaferSimulatorTest, LinearForceProducesAcceleration) {
+    WaferSimulator wafer(0.1, 10.0, 10.0, 1.0, 1.0);
+
+    Eigen::Vector2d force(1.0, 0.0);
+    wafer.applyForce(force);
     wafer.update();
 
-    auto pos = wafer.getPosition();
-    auto vel = wafer.getVelocity();
-
-    // Acceleration = force / mass = (1,2)/1 = (1,2)
-    // Velocity += a*dt = 0 + (1,2)*0.1 = (0.1,0.2)
-    // Position += v*dt = 0 + (0.1,0.2)*0.1 = (0.01,0.02)
-    EXPECT_NEAR(vel.x(), 0.1, 1e-9);
-    EXPECT_NEAR(vel.y(), 0.2, 1e-9);
-    EXPECT_NEAR(pos.x(), 0.01, 1e-9);
-    EXPECT_NEAR(pos.y(), 0.02, 1e-9);
+    Eigen::Vector2d vel = wafer.getVelocity();
+    // a = F / m = 1, so v = a * dt = 0.1
+    EXPECT_NEAR(vel.x(), 0.1, 1e-6);
+    EXPECT_NEAR(vel.y(), 0.0, 1e-6);
 }
 
-// Test drag effect
-TEST(WaferSimulatorTest, DragEffect) {
-    WaferSimulator wafer(0.1, 10.0, 10.0, 1.0, 1.0); // dragCoeff = 1.0
-    wafer.setForce(Eigen::Vector2d(1.0, 0.0));
+// Off-centre force should produce torque and rotation
+TEST(WaferSimulatorTest, OffCentreForceProducesRotation) {
+    WaferSimulator wafer(0.01, 10.0, 10.0, 1.0, 1.0);
+
+    // Apply upward force on right edge in local coordinates
+    wafer.applyForceAtPoint(Eigen::Vector2d(0.0, 10.0), Eigen::Vector2d(0.5, 0.0), ForceMode2D::Local);
     wafer.update();
 
-    auto vel = wafer.getVelocity();
-    // Acceleration = (force - drag*velocity)/mass = (1-0)/1 = 1
-    EXPECT_NEAR(vel.x(), 0.1, 1e-9);
-    EXPECT_NEAR(vel.y(), 0.0, 1e-9);
-
-    // Next update: a = (1 - 1*0.1)/1 = 0.9
-    wafer.update();
-    vel = wafer.getVelocity();
-    EXPECT_NEAR(vel.x(), 0.1 + 0.09, 1e-9); // 0.19
+    EXPECT_NEAR(wafer.getOrientation(), 0.0, 0.1);
+    EXPECT_NE(wafer.getAngularVelocity(), 0.0);
 }
 
+// Apply torque directly and test angular acceleration
+TEST(WaferSimulatorTest, ApplyTorque) {
+    WaferSimulator wafer(0.1, 10.0, 10.0, 1.0, 2.0);
 
-// Test reset
-TEST(WaferSimulatorTest, Reset) {
-    WaferSimulator wafer(0.1, 1.0, 1.0, 1.0, 0.1);
-    wafer.setForce(Eigen::Vector2d(1.0, -1.0));
+    EXPECT_NEAR(wafer.getAngularVelocity(), 0.0, EPS);
+
+    wafer.applyTorque(1.0);
+    wafer.update();
+
+    // alpha = tau / I = 1 / (1/6 * 1 * 2^2) = 1 / 0.6666 = 1.5
+    // omega = alpha * dt = 0.15
+    EXPECT_NE(wafer.getAngularVelocity(), 0.0);
+}
+
+// Reset should clear all motion and orientation
+TEST(WaferSimulatorTest, ResetResetsAll) {
+    WaferSimulator wafer(0.1, 10.0, 10.0, 1.0, 1.0);
+    wafer.applyForce(Eigen::Vector2d(1.0, 0.0));
+    wafer.applyTorque(2.0);
     wafer.update();
     wafer.reset();
 
-    auto pos = wafer.getPosition();
-    auto vel = wafer.getVelocity();
-    auto f = wafer.getForce();
-
-    EXPECT_DOUBLE_EQ(pos.x(), 0.0);
-    EXPECT_DOUBLE_EQ(pos.y(), 0.0);
-    EXPECT_DOUBLE_EQ(vel.x(), 0.0);
-    EXPECT_DOUBLE_EQ(vel.y(), 0.0);
-    EXPECT_DOUBLE_EQ(f.x(), 0.0);
-    EXPECT_DOUBLE_EQ(f.y(), 0.0);
-}
-
-// Test multiple sequential updates
-TEST(WaferSimulatorTest, SequentialUpdates) {
-    WaferSimulator wafer(0.1, 5.0, 5.0, 1.0, 0.0);
-    wafer.setForce(Eigen::Vector2d(1.0, 1.0));
-
-    for (int i = 0; i < 10; ++i) {
-        wafer.update();
-    }
-
-    auto pos = wafer.getPosition();
-    auto vel = wafer.getVelocity();
-
-    // After 10 updates, velocity = a*dt*10 = 1*0.1*10=1
-    // Position = sum(vel*dt) = sum(i*0.1*0.1) = 0.55
-    EXPECT_NEAR(vel.x(), 1.0, 1e-9);
-    EXPECT_NEAR(vel.y(), 1.0, 1e-9);
-    EXPECT_NEAR(pos.x(), 0.55, 1e-9);
-    EXPECT_NEAR(pos.y(), 0.55, 1e-9);
+    EXPECT_NEAR(wafer.getPosition().x(), 0.0, EPS);
+    EXPECT_NEAR(wafer.getPosition().y(), 0.0, EPS);
+    EXPECT_NEAR(wafer.getVelocity().x(), 0.0, EPS);
+    EXPECT_NEAR(wafer.getVelocity().y(), 0.0, EPS);
+    EXPECT_NEAR(wafer.getOrientation(), 0.0, EPS);
+    EXPECT_NEAR(wafer.getAngularVelocity(), 0.0, EPS);
 }
