@@ -15,6 +15,8 @@ data_storage.init_trajectory(sim, key="wafer1")
 fig, ax = plt.subplots()
 wafer_patch, trail_line = visualiser.init_visuals(sim, ax, key="wafer1")
 
+sim.applyForce(0,1)
+
 # ---------- Animation / update loop ----------
 def animate(frame):
     
