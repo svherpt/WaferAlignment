@@ -6,7 +6,11 @@ from simulator import visualiser, data_storage
 
 # ---------- Setup environment and model ----------
 env = WaferBasicMotionEnv()
-model = PPO.load("logs/basic_motion/ppo_wafer_final.zip")
+
+model = "ppo_wafer_final.zip"
+model = "ppo_wafer_460000_steps.zip"
+
+model = PPO.load(f'logs/basic_motion/{model}')
 
 # Initialize trajectory tracking for visualisation
 data_storage.init_trajectory(env.sim, key="wafer1")
@@ -21,9 +25,12 @@ ax.add_patch(target_marker)
 # Reset environment
 obs, _ = env.reset()
 
+total_rewards = 0.0
 # ---------- Animation / update function ----------
 def animate(frame):
     global obs
+    global total_rewards
+
     # Use trained policy
     action, _ = model.predict(obs, deterministic=True)
     obs, reward, done, _, _ = env.step(action)
@@ -33,11 +40,16 @@ def animate(frame):
     visualiser.update_visuals(env.sim, key="wafer1")
 
     target_marker.center = env.target
-
+    total_rewards += reward
+    
     # Reset if episode done
     if done:
+        # Print final reward
+        print(f"Episode done, final reward: {total_rewards:.2f}")
+        
         obs, _ = env.reset()
         data_storage.init_trajectory(env.sim, key="wafer1")
+        total_rewards = 0.0
 
     return visualiser.trail_dict["wafer1"], visualiser.patch_dict["wafer1"]
 

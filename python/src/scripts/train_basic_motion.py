@@ -10,7 +10,7 @@ from envs.basic_motion_env import WaferBasicMotionEnv
 def make_env():
     """Factory that creates a monitored environment instance."""
     def _thunk():
-        env = WaferBasicMotionEnv(dt=0.01, limit=10.0, size=1.0)
+        env = WaferBasicMotionEnv(dt=0.05, limit=10.0, size=1.0)
         env = Monitor(env) 
         return env
     return _thunk
