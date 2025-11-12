@@ -4,11 +4,14 @@ from stable_baselines3 import PPO
 from envs.basic_motion_env import WaferBasicMotionEnv
 from simulator import visualiser, data_storage
 
-# ---------- Setup environment and model ----------
-env = WaferBasicMotionEnv()
+DT = 0.01
 
-model = "ppo_wafer_final.zip"
-model = "ppo_wafer_460000_steps.zip"
+# ---------- Setup environment and model ----------
+env = WaferBasicMotionEnv(dt=DT, limit=10.0, size=1.0)
+
+
+# model = "ppo_wafer_final.zip"
+model = "ppo_wafer_40000_steps.zip"
 
 model = PPO.load(f'logs/basic_motion/{model}')
 

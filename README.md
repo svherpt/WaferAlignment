@@ -126,6 +126,10 @@ Notes
 
 - Nanobind is used for efficient C++ ↔ Python bindings.
 - Python module on Windows has extension `.pyd`; on Linux/macOS it is `.so`.
+- Check training results with:
+```bash
+tensorboard --logdir=logs\basic_motion
+```
 
 ---
 
